@@ -4,7 +4,7 @@ This first tutorial introduces you to the basics of building event knowledge gra
 
 The tutorial then covers step by step the Cypher queries needed to build event knowledge graphs.
 
-## Download and Install
+## 1 Download and Install
 
 To follow this tutorial you need
 * an instance of the Neo4j database
@@ -14,7 +14,7 @@ To follow this tutorial you need
    * `graphviz`
 
 
-### Neo4j
+### 1.1 Neo4j
 
 You need a clean instance of Neo4j running for this tutorial.
 1. Download and install Neo4j, e.g., Neo4j Desktop from [https://neo4j.com/download/]
@@ -42,12 +42,12 @@ from neo4j import GraphDatabase
 driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "1234")) 
 ```
 
-### Tutorial files
+### 1.2 Tutorial files
 
 Download all files of this repository/unzip the file into a directory _&lt;tutorial&gt;_ with no dash character '-' in the entire directory path. Otherwise data import into Neo4j will not succeed.
 
 
-## Preparing Event Data for Import
+## 2 Preparing Event Data for Import
 
 The input data for this tutorial is a single event table in `.csv` format: [./input_logs/order_process_event_table_orderhandling.csv](./input_logs/order_process_event_table_orderhandling.csv) which contains multiple records, each describing one event that has been executed with the following attributes:
 * a timestamp attribute `time`
@@ -63,7 +63,7 @@ The python script [./0_prepare_log_for_import.py](./0_prepare_log_for_import.py)
 
 Running the script will read the file [./input_logs/order_process_event_table_orderhandling.csv](./input_logs/order_process_event_table_orderhandling.csv), preprocess it, and output [./prepared_logs/order_process_event_table_orderhandling_prepared.csv](./prepared_logs/order_process_event_table_orderhandling_prepared.csv) which is ready for Neo4j import.
 
-## Building Event Knowledge Graphs
+## 3 Building Event Knowledge Graphs
 
 We now start from the prepared event table [./prepared_logs/order_process_event_table_orderhandling_prepared.csv](./prepared_logs/order_process_event_table_orderhandling_prepared.csv). Building an event knowledge graph takes the following steps.
 
@@ -74,7 +74,7 @@ We now start from the prepared event table [./prepared_logs/order_process_event_
 
 For each step, we first show and explain the `Cypher` query that can be executed directly in the Neo4j browswer and then point to the Python scripts that automate the steps, and finally the entire procedure.
 
-### Import event records as event nodes
+### 3.1 Import event records as event nodes
 
 Open Neo4j browser (or any other Neo4j console) and enter the following Cypher query to import events from  [./prepared_logs/order_process_event_table_orderhandling_prepared.csv](./prepared_logs/order_process_event_table_orderhandling_prepared.csv) into Neo4j. Make sure to replace the placeholder _&lt;tutorial&gt;_ with the full OS directory path to where you unzipped the tutorial files, e.g., `D:/data/eventgraph_tutorial/` or `/home/myUsername/eventgraph_tutorial/`.
 
@@ -92,7 +92,7 @@ Added 34 labels, created 34 nodes, set 242 properties, completed after 10 ms.
 
 Note: the above query is not scalable to large input files of 1000s of event records. Below we embed the query into a transaction that will improve performance, but for now we focus on the essence.
 
-### Query the event nodes imported
+### 3.2 Query the event nodes imported
 
 In the Neo4j browser, we can query for the event nodes we just imported and inspect them. Enter
 ```
@@ -118,7 +118,7 @@ which returns a table with the queried properties
 
 See the [Cypher documentation on MATCH](https://neo4j.com/docs/cypher-manual/current/clauses/match/) for further details on querying nodes.
 
-### Identify entity types and create entity nodes (from singleton values)
+### 3.3 Identify entity types and create entity nodes (from singleton values)
 
 If we inspect the event node properties, for example with the previous query, we can see that some properties hold identifiers for entities of a specific type. For example, property _Order_ holds identifies _O1_ and _O2_ referring to two different orders. By exploring and querying the data - combined with some domain knowledge or common sense - we can pick out which properties describe entity types. In the tutorial data, these are
 * data objects
@@ -168,7 +168,7 @@ WITH DISTINCT e.$EntityName AS id_val
 MERGE (:Entity {ID:id_val, EntityType:"$EntityName"})
 ```
 
-### Identify entity types and create entity nodes (from list values)
+### 3.4 Identify entity types and create entity nodes (from list values)
 
 The above query for entity creation does not work if an attribute holds a list of entity identifier values. For example, the query
 
@@ -208,11 +208,10 @@ The query splits the the string `e.Item` on the delimiter `','` into a list of s
 | ["X1","X2","Y1"] |
 | ["X3","Y2"] |
 
-Each value for _Item_ now is a list of identifiers. We can use `UNWIND` on `e.Item` to iterate over the list and create one entity node per identifier in the list, as we did for the singleton value case. 
+Each value for _Item_ now is a list of identifiers. We can use `UNWIND` on `e.Item` to iterate over the list and create one entity node per identifier in the list, as we did for the singleton value case.  As we now iterate over a list, we can also drop the check for `e.Item <> "null"`.
 
 ```
-MATCH (e:Event) WHERE e.Item <> "null" 
-UNWIND e.Item AS id_val
+MATCH (e:Event) UNWIND e.Item AS id_val
 WITH DISTINCT id_val
 MERGE (:Entity {ID:id_val, EntityType:"Item"})
 ```
@@ -220,8 +219,50 @@ This results in the creation of 5 `:Entity` nodes of type _Item_ for _X1,X2,X3,Y
 
 Luckily, we can apply the above query with `UNWIND` also on properties with just singleton values. Cypher will gracefully treat the singleton value as a singleton list. This means our generic query template for creating entity nodes from property `$EntityName` is
 ```
-MATCH (e:Event) WHERE e.$EntityName <> "null" 
-UNWIND e.$EntityName AS id_val
+MATCH (e:Event) UNWIND e.$EntityName AS id_val
 WITH DISTINCT id_val
 MERGE (:Entity {ID:id_val, EntityType:"$EntityName"})
+```
+
+### 3.5 Correlate events to entity nodes
+
+We can now create a `:CORR` relationship from an _:Event_ to an _:Entity_ node whenever the event refers to the entity (by its type and identifier).
+
+```
+MATCH (e:Event) UNWIND e.Item AS id_val WITH e,id_val
+MATCH (n:Entity {EntityType: "Item"}) WHERE id_val = n.ID
+CREATE (e)-[:CORR]->(n)
+```
+
+We now have the first interesting graph structures that we can query
+```
+MATCH (n:Entity {EntityType:"Item"})<-[c:CORR]-(e:Event) RETURN e,c,n
+```
+
+The general query template is
+
+```
+MATCH (e:Event) UNWIND e.$EntityName AS id_val WITH e,id_val
+MATCH (n:Entity {EntityType: $EntityName}) WHERE id_val = n.ID
+CREATE (e)-[:CORR]->(n)
+```
+
+### 3.6 Infer directly-follows relationships
+
+The _:Event_ nodes correlated to the same _:Entity_ node describe the changes observed for that entity. We collect all events of the entity, sort them by their timestamp, and add a new `:DF` relationship between any two subsequent events. The following query will do this for all entity nodes in the data. We no longer require domain knowledge about which attributes represent entities of which type as this is fully materialized in the _:Entity_ nodes of the event knowledge graph.
+
+```
+MATCH (n:Entity)
+MATCH (n)<-[:CORR]-(e)
+WITH n, e AS nodes ORDER BY e.timestamp, ID(e)
+WITH n, collect(nodes) AS event_node_list
+UNWIND range(0, size(event_node_list)-2) AS i
+WITH n, event_node_list[i] AS e1, event_node_list[i+1] AS e2
+MERGE (e1)-[df:DF {EntityType:n.EntityType, ID:n.ID}]->(e2)
+```
+
+### 3.7 Querying the graph of Events and directly-follows relationships
+
+```
+MATCH (e1:Event)-[df:DF]->(e2:Event) RETURN e1,df,e2
 ```
