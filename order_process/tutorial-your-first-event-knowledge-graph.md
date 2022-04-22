@@ -207,7 +207,9 @@ The query splits the the string `e.Item` on the delimiter `','` into a list of s
 | ["Y2"] |
 | ["X1","X2","Y1"] |
 | ["X3","Y2"] |
+
 Each value for _Item_ now is a list of identifiers. We can use `UNWIND` on `e.Item` to iterate over the list and create one entity node per identifier in the list, as we did for the singleton value case. 
+
 ```
 MATCH (e:Event) WHERE e.Item <> "null" 
 UNWIND e.Item AS id_val

@@ -1,5 +1,10 @@
 # eventgraph_tutorial
-A collection of tutorials for using Cypher and Neo4j for creating, querying, analyzing, and doing process mining with event knowledge graphs.
+A collection of tutorials for using Cypher and Neo4j for creating, querying, analyzing, and doing process mining with event knowledge graphs. 
+
+All tutorials require a clean instance of the Neo4j graph database system running for this tutorial.
+1. You can download and install Neo4j from [https://neo4j.com/download/]
+2. See [https://neo4j.com/docs/desktop-manual/current/operations/create-dbms/] for how to create a new Neo4j instance.
+   All tutorials assumes the default user '**neo4j**' with password '**1234**', which you can set when creating a new neo4j instance.
 
 ## Tutorial 1: [./order_process](./order_process)
 
