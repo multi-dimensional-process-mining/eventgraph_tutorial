@@ -1,8 +1,10 @@
 # Tutorial 1: Building Your First Event Knowledge Graph with Neo4j and Cypher
 
-This first tutorial introduces you to the basics of building event knowledge graphs from event tables, using the database system Neo4j and the Cypher query language. Below you find instructions for downloading and setting up the necessary software.
+This first tutorial introduces you to the basics of building event knowledge graphs from event tables, using the database system Neo4j and the Cypher query language. 
 
-The tutorial then covers step by step the Cypher queries needed to build event knowledge graphs.
+Below you find instructions for downloading and setting up the necessary software. The tutorial then covers step by step the Cypher queries needed to build event knowledge graphs.
+
+If you are familiar with Neo4j and Cypher or just want the essence, then follow the [quick version of the tutorial](./tutorial-your-first-event-knowledge-graph-quick.md).
 
 ## 1 Download and Install
 

@@ -18,8 +18,8 @@ This is the very first tutorial you should follow. In this tutorial, you learn
   * query the graph for directly-follows paths
 
 The tutorial comes with
-1. step by step instructions in [./order_process/tutorial-your-first-event-knowledge-graph.md](./order_process/tutorial-your-first-event-knowledge-graph.md)
-2. a small example dataset that on which you can learn all the design ideas and modeling power of event knowledge graphs while still knowing every event by its name
+1. a small example dataset that on which you can learn all the design ideas and modeling power of event knowledge graphs while still knowing every event by its name
+2. step by step instructions in [./order_process/tutorial-your-first-event-knowledge-graph.md](./order_process/tutorial-your-first-event-knowledge-graph.md), and a quick version for the impatient in [./order_process/tutorial-your-first-event-knowledge-graph-quick.md](./order_process/tutorial-your-first-event-knowledge-graph-quick.md)
 
 ## Looking for more?
 
