@@ -23,7 +23,7 @@ Note that we introduce a new label `:Class` to model event classes. The **type**
 ```
 MATCH ( c : Class ) WHERE c.Type = "Activity"
 MATCH ( e : Event ) WHERE c.Name = e.Activity
-CREATE ( e ) -[:OBSERVED]-> ( c )'''
+CREATE ( e ) -[:OBSERVED]-> ( c )
 ```
 Below we show an example of a different event classifier. For now we continue with *Activity* classes.
 
@@ -77,4 +77,4 @@ The query can also be adapted to only aggregate df relationships with a minimum/
 ## 6 Constructing DFGs for different event classifiers
 
 The above queries are generic once `:Class` nodes have been modeled in the graph. So far we only aggregated events by their *Activity* property. The following tutorials show how to do discovery for different event classifiers:
-*  (discovering Proclet models in event knowledge graphs)[./tutorial-basic-process-discovery-Proclets-quick.md]
+*  [discovering Proclet models in event knowledge graphs](./tutorial-basic-process-discovery-Proclets-quick.md)
