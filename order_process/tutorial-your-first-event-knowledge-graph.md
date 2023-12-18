@@ -261,7 +261,7 @@ We can easily adopt the above query to infer entity nodes for all the other enti
 * __Invoice__ with  `MATCH (e:Event) UNWIND e.Invoice AS id_val WITH DISTINCT id_val MERGE (:Entity {ID:id_val, EntityType:"Invoice"})`
 * __Payment__ with  `MATCH (e:Event) UNWIND e.Payment AS id_val WITH DISTINCT id_val MERGE (:Entity {ID:id_val, EntityType:"Payment"})`
 
-For now, we do not add `:Entity` dnoes for __Actor__ entities for now to keep the graph structure simpler. We will add them in a different tutorial when we specifically focus on analyzing actor behavior in a process.
+For now, we do not add `:Entity` nodes for __Actor__ entities to keep the graph structure simpler. We will add them in a different tutorial when we specifically focus on analyzing actor behavior in a process.
 
 In a later tutorial we discuss how to replace multiple almost idential queries by a parameterized query. For this tutorial, we stick to verbatim repetitions.
 
