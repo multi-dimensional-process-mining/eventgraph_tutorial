@@ -14,14 +14,14 @@ import os
 # 1. Find the neo4j.conf file for your Neo4j installation. See https://neo4j.com/docs/operations-manual/current/configuration/file-locations/
 #    If you are using Neo4j Desktop, this is located under <yourGraph> > Manage > Settings (you have to stop the DB instance first)
 # 2. Comment out this line (by adding # at the start of the line):
-#         dbms.directories.import=import
+#         server.directories.import=import
 # 3. Uncomment this line to allow CSV import from file URL:
 #         #dbms.security.allow_csv_import_from_file_urls=true
 # 4. Restart Neo4j
 #
 inputPath = './prepared_logs/'
 inputFile = 'order_process_event_table_orderhandling_prepared.csv'
-os_inputPath = os.path.realpath(inputPath+inputFile)
+os_inputPath = os.path.realpath(inputPath+inputFile).replace('\\','/')
 
 # Generic part for event import to Neo4j starts below
 
@@ -31,7 +31,7 @@ from neo4j import GraphDatabase
 
 # connection to Neo4J database
 # the queries in this file make use of the APOC library, make sure to have the APOC plugin installed for this DB instance
-driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "1234"))
+driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "12341234"))
 
 # function to run the given query on the connected Neo4J database
 def runQuery(driver, query):
@@ -59,7 +59,7 @@ def getLogHeader(fileName):
 def CreateEventQuery(fileName, logHeader, LogID = ""):
  
     # import each row of the CSV one by one, as variable 'line' 
-    query = f'USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///{fileName}\" as line'
+    query = f'CALL {{LOAD CSV WITH HEADERS FROM \"file:///{fileName}\" as line'
     # per line create an :Event node
     query = query + f' CREATE (e:Event {{ '
     # subsequent lines specify how the attribute of event e are set (from "line')
@@ -84,6 +84,7 @@ def CreateEventQuery(fileName, logHeader, LogID = ""):
         else:
             query = query + f' {col}: {colValue} }})'
 
+    query = query + f'}} IN TRANSACTIONS'
     return query
 
 ####################################################
@@ -145,6 +146,6 @@ def qSplitPropertyStringsToList(tx, allProperties):
 
 # execute both queries above: for each property key in the database, split the values (except for timestamps)
 with driver.session() as session:
-    allProperties = session.read_transaction(qGetAllEventProperties)
+    allProperties = session.execute_read(qGetAllEventProperties)
     allProperties.remove("timestamp") # do not process the timestamp attribute
-    session.write_transaction(qSplitPropertyStringsToList, allProperties)
+    session.execute_write(qSplitPropertyStringsToList, allProperties)

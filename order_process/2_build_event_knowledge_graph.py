@@ -4,7 +4,7 @@ from neo4j import GraphDatabase
 
 # connection to Neo4J database
 # the queries in this file make use of the APOC library, make sure to have the APOC plugin installed for this DB instance
-driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "1234"))
+driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "12341234"))
 
 # function to run the given query on the connected Neo4J database
 def runQuery(driver, query):
@@ -66,8 +66,8 @@ def q_correlate_events_to_entity(tx, entity_type, attribute_holding_id, WHERE_ev
 
 with driver.session() as session:
     for ent in model_entities_from_attributes:
-        session.write_transaction(q_create_entity,ent[0],ent[1],ent[2])
-        session.write_transaction(q_correlate_events_to_entity,ent[0],ent[1],ent[2])
+        session.execute_write(q_create_entity,ent[0],ent[1],ent[2])
+        session.execute_write(q_correlate_events_to_entity,ent[0],ent[1],ent[2])
 
 ### Build Event Knowledge Graph:
 ### Step 2) Infer Directly-Follows Relation between correlated evente
@@ -110,8 +110,8 @@ option_df_typed = False
 with driver.session() as session:
     
     if option_df_typed == False: # for generic DF relations
-        session.write_transaction(q_create_directly_follows)
+        session.execute_write(q_create_directly_follows)
     else:
         for ent in model_entities_from_attributes:
-            session.write_transaction(q_create_directly_follows_typed,ent[0])
+            session.execute_write(q_create_directly_follows_typed,ent[0])
 
