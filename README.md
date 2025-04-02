@@ -33,6 +33,15 @@ Currently only the quick version of the tutorial is available; the full version 
   * aggregate directly-follows relations per entity and add synchronization edges between activities in different entities
 Currently only the quick version of the tutorial is available; the full version is under development.
 
+## Tutorials for Object-Centric Process Mining
+
+### on the [./order_process](./order_process)
+
+[Tutorial OCPM 1: Building and Analyzing Object Relations](./order_process/tutorial-ocpm-relations.md). In this tutorial you learn 
+  * how to identify relations between objects,
+  * how to assign directions to relations, and
+  * how to create a simple but powerful object-centric process mining summary based on object relations.
+
 ## Looking for more?
 
 * [https://github.com/multi-dimensional-process-mining/graphdb-eventlogs] provides Python scripts implementing parameterized Cypher query templates for building event knowledge graphs of 5 real-life event logs, see also [https://zenodo.org/record/4708117] for a fully packaged `.zip` with queries and datasets
