@@ -44,10 +44,6 @@ class OcelImport:
                     if isinstance(d, dict):
                         self.ocelData = d
 
-    def import_object_types(self):
-        for ot in self.ocelData[OcelImport.K_OBJECT_TYPES]:
-            result = self.connection.exec_query(ql.q_import_object_type_node, **{"object_type_node":ot})
-            print(f"Import {result} nodes.")
 
     def prepare_objects(self):
         o = self.ocelData[OcelImport.K_OBJECTS]
@@ -116,7 +112,7 @@ class OcelImport:
         data_r.to_csv(self.csv_relations_e2o, index=False)
 
     # execute a query
-    def run_query(self, query: str):
+    def _run_query(self, query: str):
         with self.driver.session() as session:
             result = session.run(query).single()
             if result != None: 
@@ -126,7 +122,7 @@ class OcelImport:
 
     # load csv header (attribute names) from import file
     @staticmethod
-    def get_csv_header(fileName):
+    def _get_csv_header(fileName):
         with open(fileName) as f:
             reader = csv.reader(f)
             logHeader = list(next(reader))
@@ -134,43 +130,43 @@ class OcelImport:
         return logHeader
 
     # create index on nodes with label 'node_label', for a specific attribute 'id'
-    def create_index(self, nodel_label, id):
+    def _create_index(self, nodel_label, id):
         index_query = ql.q_create_index(nodel_label, id)
-        self.run_query(index_query)
+        self._run_query(index_query)
 
     # import records from 'csv' file as nodes with label 'node_label'
-    def import_nodes(self, csv, node_label):
+    def _import_nodes(self, csv, node_label):
         print("Import "+node_label+" from "+csv)
         
         # need full path to csv file for correct import query for neo4j
         full_path = os.path.realpath(csv)
         # need csv header to generate load query
-        header = OcelImport.get_csv_header(csv)
+        header = OcelImport._get_csv_header(csv)
         # generate query for loading nodes
         load_query = ql.q_load_csv_as_nodes(full_path, header, node_label)
         # run the query
-        self.run_query(load_query)
+        self._run_query(load_query)
 
     # import ocel2 events from prepared event table csv
-    def ocel2_import_events(self):
-        self.create_index("Event", "id")
-        self.import_nodes(self.csv_events, "Event")
+    def import_events(self):
+        self._create_index("Event", "id")
+        self._import_nodes(self.csv_events, "Event")
 
     # import ocel2 objects from prepared object table csv
-    def ocel2_import_objects(self):
-        self.create_index("Entity", "id")
-        self.import_nodes(self.csv_objects, "Entity")
+    def import_objects(self):
+        self._create_index("Entity", "id")
+        self._import_nodes(self.csv_objects, "Entity")
 
     # import ocel2 object attributes from prepared attribute table csv
-    def ocel2_import_object_attributes(self):
+    def import_object_attributes(self):
         # import attribute nodes        
-        self.import_nodes(self.csv_object_attributes, "EntityAttribute")
+        self._import_nodes(self.csv_object_attributes, "EntityAttribute")
         # link attribute nodes to object nodes
         link_query = ql.q_link_node_to_node("Entity", "id", "HAS_ATTRIBUTE", "EntityAttribute", "id")
-        self.run_query(link_query)
+        self._run_query(link_query)
 
     # import ocel2 event-object relation from relation tabel csv
-    def ocel2_import_e2o_relation(self):
+    def import_e2o_relation(self):
 
         print("Import relation from "+self.csv_relations_e2o)
 
@@ -181,10 +177,10 @@ class OcelImport:
         ### create CORR relation with type 'qualifier'
         ### resolve 'objectId' to an 'Entity' node with matching 'id' 
         load_query = ql.q_load_csv_as_relation(full_path, "eventId", "Event", "id", "qualifier", "CORR", "objectId", "Entity", "id")
-        self.run_query(load_query)
+        self._run_query(load_query)
 
     # ocel2 allows storing multiple values per object attribute
     # materialze last object state by translating the latest attribute values in node properties of the object node
-    def ocel2_materialize_last_object_state(self):
+    def materialize_last_object_state(self):
         set_query = ql.q_ocel2_materialize_last_object_state()
-        self.run_query(set_query)
+        self._run_query(set_query)
