@@ -21,7 +21,7 @@ MERGE ( c : Class { ID: actName+"_"+EType, Name:actName, EntityType:EType, Type:
 Again, we link `:Class` nodes to the event nodes from which they are generated:
 ```
 MATCH ( c : Class ) WHERE c.Type = "Activity,EntityType"
-MATCH (e:Event)-[:CORR]->(n:Entity) WHERE c.Name = e.Activity AND c.EntityType=e.EntityType
+MATCH (e:Event)-[:CORR]->(n:Entity) WHERE c.Name = e.Activity AND c.EntityType=n.EntityType
 CREATE ( e ) -[:OBSERVED]-> ( c )
 ```
 
