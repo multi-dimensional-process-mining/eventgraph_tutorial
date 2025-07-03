@@ -42,6 +42,18 @@ Currently only the quick version of the tutorial is available; the full version 
   * how to assign directions to relations, and
   * how to create a simple but powerful object-centric process mining summary based on object relations.
 
+[Tutorial OCPM 2: Analyzing and Summarzing Object Traces](./order_process/tutorial-ocpm-object-traces.md). In this tutorial you learn 
+  * how to query for and visualize object-centric behavior in terms of **object-traces**, and
+  * how to summarize the behavior of all objects of the same type as **object trace variants**
+
+[Tutorial OCPM 3: Defining and Analyzing Object-Centric Process Executions](./order_process/tutorial-ocpm-object-centric-process-executions.md). In this tutorial you learn 
+  * how we can transfer the notion of the classical "case" concept to an object-centric setting and define **object-centric start-to-end executions** in different forms
+  * how to query and materialize knowledge about object-centric start-to-end executions by extending the EKG
+  * how to **visualize, understand, and compare** object-centric start-to-end executions of the same kind
+  * how to summarize object-centric process executions in terms of activities resulting in **object-centric process variants**
+  * how to model object-centric process executions in terms of involved objects and which insights can be gained
+  * how to generete a global behavioral summary of an EKG
+
 ## Looking for more?
 
 * [https://github.com/multi-dimensional-process-mining/graphdb-eventlogs] provides Python scripts implementing parameterized Cypher query templates for building event knowledge graphs of 5 real-life event logs, see also [https://zenodo.org/record/4708117] for a fully packaged `.zip` with queries and datasets
