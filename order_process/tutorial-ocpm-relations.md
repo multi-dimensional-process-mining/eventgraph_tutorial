@@ -20,10 +20,10 @@ Through the [tutorial](./tutorial-your-first-event-knowledge-graph.md) you shoul
 !["Image of Event Knowledge Graph of the order process"](./tutorial_images/ocpm-relations/order_process_ekg_full.png "Image of Event Knowledge Graph of the Order Process")
 
 It contains following types of nodes
-  * **:Event** nodes describing occurrences of an activity at a particular point in time, furter described by various properties
-  * **:Entity** nodes describing the process objects and other entities in the process
-  * **:CORR** (correlation) relationships where  `(e:Event) -[:CORR]-> (n:Entity)` states that event *e* refers to entity *n*
-  * **:DF** (directly-follows) relationships where `(e1:Event) -[:DF { ID:"o1" }]-> (e2:Event)` states that event *e1* is directly followed by event *e2* from the perspective of an entity *n* with `n.ID=o1`
+  * **:Event** nodes, shown in green, describing occurrences of an activity at a particular point in time, furter described by various properties
+  * **:Entity** nodes, shown in orange, describing the process objects and other entities in the process
+  * **:CORR** (correlation) relationships, shown in grey, where  `(e:Event) -[:CORR]-> (n:Entity)` states that event *e* refers to entity *n*
+  * **:DF** (directly-follows) relationships, shown in red, where `(e1:Event) -[:DF { ID:"o1" }]-> (e2:Event)` states that event *e1* is directly followed by event *e2* from the perspective of an entity *n* with `n.ID=o1`
 
 To better understand it, we should look at the events and the objects separately.
 

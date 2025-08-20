@@ -46,13 +46,22 @@ Currently only the quick version of the tutorial is available; the full version 
   * how to query for and visualize object-centric behavior in terms of **object-traces**, and
   * how to summarize the behavior of all objects of the same type as **object trace variants**
 
-[Tutorial OCPM 3: Defining and Analyzing Object-Centric Process Executions](./order_process/tutorial-ocpm-object-centric-process-executions.md). In this tutorial you learn 
+[Tutorial OCPM 3.1: Defining and Querying Object-Centric Process Executions](./order_process/tutorial-ocpm-object-centric-process-executions.md). In this tutorial you learn 
   * how we can transfer the notion of the classical "case" concept to an object-centric setting and define **object-centric start-to-end executions** in different forms
   * how to query and materialize knowledge about object-centric start-to-end executions by extending the EKG
   * how to **visualize, understand, and compare** object-centric start-to-end executions of the same kind
+
+[Tutorial OCPM 3.2: Summarizing and Analyzing Object-Centric Process Executions](./order_process/tutorial-ocpm-object-centric-process-executions-summarizing.md). In this tutorial you learn 
   * how to summarize object-centric process executions in terms of activities resulting in **object-centric process variants**
   * how to model object-centric process executions in terms of involved objects and which insights can be gained
   * how to generete a global behavioral summary of an EKG
+
+[Tutorial OCPM 3.3: Generalized Object-Centric Start-to-End Executions](./order_process/tutorial-ocpm-object-centric-process-executions-generalized.md). In this tutorial you learn 
+  * how to generalize the notion object-centric start-to-end executions by
+    * using **start/end activities** instead of start/end objects
+    * allowing **multiple start/end events** instead of single start/end events
+    * **filtering** which objects to include/exclude in the execution
+  * how to apply all of the above to define a form of **object-centric cases** based on a **leading object type**  
 
 ## Looking for more?
 
