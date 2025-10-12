@@ -1,4 +1,4 @@
-# Tutorial OCPM 3: Defining and Querying Object-Centric Process Executions
+# Tutorial OCPM 3.1: Defining and Querying Object-Centric Process Executions
 
 This tutorial is part of a series of tutorials for realizing Object-Centric Process Mining (OCPM) with Event Knowledge Graphs (EKGs).
 
@@ -338,7 +338,7 @@ With this, we now have all tools to
 * materialize individual executions using Execution nodes
 * visualize the structure of executions on the level entire executions and on the level of events and df-paths
 
-### 4. Which object-centric executions are in the example data?
+## 4. Which object-centric executions are in the example data?
 
 Let us apply all of the above queries for all *possible* start-to-end executions. Our aim is to 
 * get an overview which kinds of start-to-end executions are contained in the data, and

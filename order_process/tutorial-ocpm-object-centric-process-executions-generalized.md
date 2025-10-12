@@ -1,4 +1,4 @@
-# Tutorial OCPM 5: Generalized Object-Centric Start-to-End Executions
+# Tutorial OCPM 3.3: Generalized Object-Centric Start-to-End Executions
 
 This tutorial is part of a series of tutorials for realizing Object-Centric Process Mining (OCPM) with Event Knowledge Graphs (EKGs).
 

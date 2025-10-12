@@ -1,4 +1,4 @@
-# Tutorial OCPM 4: Summarizing and Analyzing Object-Centric Process Executions
+# Tutorial OCPM 3.2: Summarizing and Analyzing Object-Centric Process Executions
 
 This tutorial is part of a series of tutorials for realizing Object-Centric Process Mining (OCPM) with Event Knowledge Graphs (EKGs).
 It is a direct follow-up to the tutorial on [Object-Centric Process Executions](./tutorial-ocpm-object-centric-process-executions.md)
