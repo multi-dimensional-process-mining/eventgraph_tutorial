@@ -16,16 +16,23 @@ This tutorial provides queries to discover proclet models from event knowledge g
 The [tutorial on discovering DFGs](./tutorial-basic-process-discovery-DFG-quick.md) only aggregated events by their *Activity* property. Below is a different classifier that distinguishes in which *EntityType* an event occurs.
 ```
 MATCH (e:Event)-[:CORR]->(n:Entity) WITH distinct e.Activity as actName,n.EntityType as EType
-MERGE ( c : Class { ID: actName+"_"+EType, Name:actName, EntityType:EType, Type:"Activity,EntityType"})
+MERGE ( c : Class { ID: actName+"_"+EType, EventType:actName, EntityType:EType, Type:"Activity,EntityType"})
 ```
 Again, we link `:Class` nodes to the event nodes from which they are generated:
 ```
 MATCH ( c : Class ) WHERE c.Type = "Activity,EntityType"
-MATCH (e:Event)-[:CORR]->(n:Entity) WHERE c.Name = e.Activity AND c.EntityType=n.EntityType
+MATCH (e:Event)-[:CORR]->(n:Entity) WHERE c.EventType = e.Activity AND c.EntityType=n.EntityType
 CREATE ( e ) -[:OBSERVED]-> ( c )
 ```
 
-## 2 Lifting Directly-Follows Relationships
+And we count the frequency how often each `:Class` node was observed by an event:
+```
+MATCH ( e : Event )-[:OBSERVED]->( c : Class ) 
+WITH c, count(e) AS freq 
+SET c.frequency = freq
+```
+
+## 2 Aggreagting Directly-Follows Relationships
 
 We adapt the query for DFG discovery to aggregate `:DF` relationships between events to classes - but only if the classes match the entitytype of the `:DF` relationships to aggregate:
 ```
@@ -33,14 +40,33 @@ MATCH ( c1 : Class ) <-[:OBSERVED]- ( e1 : Event ) -[df:DF]-> ( e2 : Event ) -[:
 MATCH (e1) -[:CORR] -> (n) <-[:CORR]- (e2)
 WHERE c1.Type = c2.Type AND n.EntityType = df.EntityType AND c1.EntityType=n.EntityType AND c2.EntityType=n.EntityType
 WITH n.EntityType as EType,c1,count(df) AS df_freq,c2
-MERGE ( c1 ) -[rel2:DF_C {EntityType:EType}]-> ( c2 ) ON CREATE SET rel2.count=df_freq
+MERGE ( c1 ) -[df_agg:DF_C {EntityType:EType}]-> ( c2 ) ON CREATE SET df_agg.frequency=df_freq
+```
+
+We also count how often a particular activity was seen as the start activity in an entity - by checking how often an event `e` that observed a class `c` did not have an incoming `:DF` relationship for the entity type of `c`:
+
+```
+MATCH ( c : Class ) <-[:OBSERVED]- ( e : Event ) 
+WHERE NOT ( ()-[:DF {{EntityType:c.EntityType}}]->(e) )
+WITH c, count(e) AS start_freq
+SET c.StartCount = start_freq
+```
+
+Likewise we count for end activities in an entity by checking for outgoing `:DF` relationships:
+
+```
+MATCH ( c : Class ) <-[:OBSERVED]- ( e : Event ) 
+WHERE NOT ( (e)-[:DF {{EntityType:c.EntityType}}]->() )
+WITH c, count(e) AS end_freq
+SET c.EndCount = end_freq
 ```
 
 # 3 Adding synchronization edges between event classes
 
 We now add synchronized edges between event classes of the same activity in different entity types:
 ```
-MATCH ( c1 : Class ), ( c2 : Class) WHERE c1.Name=c2.Name AND c1.EntityType <> c2.EntityType
+MATCH ( c1 : Class ), ( c2 : Class) 
+WHERE c1.EventType=c2.EventType AND c1.EntityType <> c2.EntityType
 MERGE (c1)-[:SYNC]->(c2)
 ```
 Note that this query constructs a full join (cartesian product) between `:Class` nodes. This is only unproblematic if the number of distinct `:Class` nodes is small.
