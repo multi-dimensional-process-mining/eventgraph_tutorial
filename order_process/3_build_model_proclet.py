@@ -29,14 +29,14 @@ runQuery(driver, qCleanDatabase_allClassNodes) # delete all class nodes and atta
 def q_aggregate_events_to_classes(tx):
     qEventToClass = f'''
         MATCH (e:Event)-[:CORR]->(n:Entity) WITH distinct e.Activity as actName,n.EntityType as EType
-        MERGE ( c : Class {{ ID: actName+"_"+EType, Name:actName, EventType:actName, EntityType:EType, Type:"Activity,EntityType"}})
+        MERGE ( c : Class {{ ID: actName+"_"+EType, Name:actName, EventType:actName, EntityType:EType, Type:"EventType,EntityType"}})
     '''
     print(qEventToClass)
     tx.run(qEventToClass)
 
 def q_link_events_to_classes(tx):
     qObserve = f'''
-        MATCH ( c : Class ) WHERE c.Type = "Activity,EntityType"
+        MATCH ( c : Class ) WHERE c.Type = "EventType,EntityType"
         MATCH (e:Event)-[:CORR]->(n:Entity) WHERE c.EventType = e.Activity AND c.EntityType=n.EntityType
         CREATE ( e ) -[:OBSERVED]-> ( c )'''
     print(qObserve)

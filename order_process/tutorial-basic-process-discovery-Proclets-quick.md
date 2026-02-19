@@ -16,11 +16,11 @@ This tutorial provides queries to discover proclet models from event knowledge g
 The [tutorial on discovering DFGs](./tutorial-basic-process-discovery-DFG-quick.md) only aggregated events by their *Activity* property. Below is a different classifier that distinguishes in which *EntityType* an event occurs.
 ```
 MATCH (e:Event)-[:CORR]->(n:Entity) WITH distinct e.Activity as actName,n.EntityType as EType
-MERGE ( c : Class { ID: actName+"_"+EType, EventType:actName, EntityType:EType, Type:"Activity,EntityType"})
+MERGE ( c : Class { ID: actName+"_"+EType, EventType:actName, EntityType:EType, Type:"EventType,EntityType"})
 ```
 Again, we link `:Class` nodes to the event nodes from which they are generated:
 ```
-MATCH ( c : Class ) WHERE c.Type = "Activity,EntityType"
+MATCH ( c : Class ) WHERE c.Type = "EventType,EntityType"
 MATCH (e:Event)-[:CORR]->(n:Entity) WHERE c.EventType = e.Activity AND c.EntityType=n.EntityType
 CREATE ( e ) -[:OBSERVED]-> ( c )
 ```
